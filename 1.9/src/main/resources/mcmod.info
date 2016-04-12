@@ -1,0 +1,16 @@
+[
+{
+  "modid": "gatemod",
+  "name": "gatemod",
+  "description": "Teleport wallsign-button mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Ternsip"],
+  "credits": "Ternsip",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
