@@ -1,6 +1,8 @@
 package com.ternsip.gatemod;
 
 
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
@@ -30,7 +32,7 @@ public class Gatemode {
 
     public static final String MODID = "gatemod";
     public static final String MODNAME = "GateMod";
-    public static final String VERSION = "2.2";
+    public static final String VERSION = "2.3";
     public static final String AUTHOR = "Ternsip";
     public static final String MCVERSION = "1.9.*";
 
@@ -44,7 +46,6 @@ public class Gatemode {
     public void playerInteract(PlayerInteractEvent event) {
 
         World world = event.getEntity().worldObj;
-        System.out.println("OK");
         int x = event.getPos().getX();
         int y = event.getPos().getY();
         int z = event.getPos().getZ();
@@ -95,14 +96,38 @@ public class Gatemode {
         }
     }
 
+
+    private boolean checkEnvironment(World world, int x, int y, int z) {
+        int radius = 5;
+        int lapis = 0;
+        int iron = 0;
+        int diamond = 0;
+        int gold = 0;
+        for (int dx = -radius; dx <= radius; ++dx) {
+            for (int dy = -radius; dy <= radius; ++dy) {
+                for (int dz = -radius; dz <= radius; ++dz) {
+                    Block block = world.getBlockState(new BlockPos(x + dx, y + dy, z + dz)).getBlock();
+                    diamond += Block.getIdFromBlock(block) == Block.getIdFromBlock(Blocks.diamond_block) ? 1 : 0;
+                    iron += Block.getIdFromBlock(block) == Block.getIdFromBlock(Blocks.iron_block) ? 1 : 0;
+                    lapis += Block.getIdFromBlock(block) == Block.getIdFromBlock(Blocks.lapis_block) ? 1 : 0;
+                    gold += Block.getIdFromBlock(block) == Block.getIdFromBlock(Blocks.gold_block) ? 1 : 0;
+                }
+            }
+        }
+        return (lapis >= 13 && iron >= 3 && diamond >= 1 && gold >= 1);
+    }
+
     private TileEntitySign findGate(World world, int x, int y, int z, int radiusX, int radiusY, int radiusZ) {
         for (int dx = -radiusX; dx <= radiusX; ++dx) {
             for (int dy = -radiusY; dy <= radiusY; ++dy) {
                 for (int dz = -radiusZ; dz <= radiusZ; ++dz) {
-                    TileEntity tile = world.getTileEntity(new BlockPos(x + dx, y + dy, z + dz));
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    int nz = z + dz;
+                    TileEntity tile = world.getTileEntity(new BlockPos(nx, ny, nz));
                     if (tile instanceof TileEntitySign) {
                         TileEntitySign sign = ((TileEntitySign) tile);
-                        if (sign.signText[0].getUnformattedTextForChat().equalsIgnoreCase("GATE")){
+                        if (sign.signText[0].getUnformattedTextForChat().equalsIgnoreCase("GATE") && checkEnvironment(world, nx, ny, nz)){
                             return sign;
                         }
                     }
